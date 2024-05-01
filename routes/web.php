@@ -20,6 +20,7 @@ Route::get('/', function () {
 Route::group(['namespace' => 'App\Http\Controllers\Api'], function () {
 
     Route::get('api/login', 'UserController@login');
+    Route::get('api/getalluser', 'UserController@getAllUser');
     Route::post('api/register', 'UserController@register');
     Route::post('api/update_password', 'UserController@updatePassword');
 });

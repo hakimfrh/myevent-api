@@ -57,7 +57,7 @@ class UserController extends Controller
             'business_description' => $request->business_description,
         ]);
         if ($user) {
-            return response()->json(['message' => 'ok'], 201);
+            return response()->json(['message' => 'ok'], 200);
         }else{
             return response()->json(['message' => 'unknown eror while creating user'], 406);
         }
@@ -85,6 +85,11 @@ class UserController extends Controller
         return response()->json(['message' => 'Unauthorized'], 401);
     }
 
+    public function getAllUser(){
+        $user = User::get();
+        return response()->json(['user' => $user], 200);
+    }
+
     public function updatePassword(Request $request)
     {
         $id = $request->id;
@@ -100,7 +105,7 @@ class UserController extends Controller
             if (Hash::check($currentPassword, $user->password)) {
                 $user->password = bcrypt($newPassword);
                 $user->save();
-                return response()->json(['message' => 'ok'], 201);
+                return response()->json(['message' => 'ok'], 200);
             } else {
                 return response()->json(['message' => 'password not match'], 403);
             }
@@ -109,4 +114,6 @@ class UserController extends Controller
         }
         return response()->json(['message' => 'unknown error'], 406);
     }
+
+    
 }

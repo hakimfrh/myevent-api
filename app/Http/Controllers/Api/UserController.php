@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Mail\VerificationEmail;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
@@ -58,7 +60,7 @@ class UserController extends Controller
         ]);
         if ($user) {
             return response()->json(['message' => 'ok'], 200);
-        }else{
+        } else {
             return response()->json(['message' => 'unknown eror while creating user'], 406);
         }
     }
@@ -85,7 +87,8 @@ class UserController extends Controller
         return response()->json(['message' => 'Unauthorized'], 401);
     }
 
-    public function getAllUser(){
+    public function getAllUser()
+    {
         $user = User::get();
         return response()->json(['user' => $user], 200);
     }
@@ -115,5 +118,43 @@ class UserController extends Controller
         return response()->json(['message' => 'unknown error'], 406);
     }
 
+    public function continueGoogle(Request $request)
+    {
+        $email = $request->email;
+        $firebase_id = $request->firebase_id;
+
+        if (!str_contains($email, '@')) {
+            return response()->json(['message' => 'Email not valid'], 403);
+        }
+        if (empty($firebase_id)) {
+            return response()->json(['message' => 'id not valid'], 403);
+        }
+        $user = User::where('email', $email)->first();
+        if ($user) {
+            if (empty($user->firebase_id)) {
+                $user->firebase_id = $firebase_id;
+                $user->save();
+                return response()->json(['user' => $user], 200);
+            } elseif ($user->firebase_id == $firebase_id) {
+                return response()->json(['user' => $user], 200);
+            } else {
+                return response()->json(['message' => 'firebase id not match', 'code' => 403]);
+            }
+        } else {
+            return response()->json(['message' => 'user not found'], 403);
+        }
+    }
     
+    public function sendCode(Request $requests)
+    {
+        $verificationCode = rand(100000, 999999);
+        $address = $requests->email;
+        
+        // Create a new instance of VerificationEmail and pass the verification code to it
+        $email = new VerificationEmail($verificationCode);
+        
+        // Send the email using Laravel's Mail facade
+        Mail::to($address)->send($email);
+        return response()->json(['message' => 'ok'], 200);
+    }
 }

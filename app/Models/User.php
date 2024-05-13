@@ -38,6 +38,9 @@ class User extends Authenticatable
         'password',
         'firebase_id',
         'remember_token',
+        'email_verified_at',
+        'created_at',
+        'updated_at',
     ];
 
     /**

@@ -14,20 +14,22 @@ return new class extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('phone');
+            $table->bigIncrements('id');
+            $table->string('nama_lengkap');
+            $table->string('no_telp');
             $table->string('email')->unique();
             $table->string('username')->unique();
             $table->string('password');
 
-            $table->string('business_name');
-            $table->string('business_location');
-            $table->string('business_description');
-            
-            $table->string('firebase_id')->nullable();
+            $table->string('nama_perusahaan');
+            $table->string('alamat_perusahaan');
+            $table->string('deskripsi_perusahaan');
 
-            $table->timestamp('email_verified_at')->nullable();
+            $table->string('firebase_id')->nullable();
+            
+
+            // $table->enum('status_verifikasi', ['unverified', 'verified'])->default('unverified')->nullable();
+            $table->enum('jabatan', ['admin', 'pembuat'])->default('pembuat');
             $table->rememberToken();
             $table->timestamps();
         });

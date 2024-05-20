@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -17,16 +17,22 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+    protected $table = 'users';
+
+    protected $primaryKey = 'id';
     protected $fillable = [
-        'name',
-        'phone',
-        'username',
+        'nama_lengkap',
+        'no_telp',
         'email',
+        'username',
         'password',
-        'business_name',
-        'business_location',
-        'business_description',
-        'firebase_id'
+        'status_verifikasi',
+        'jabatan',
+        'nama_perusahaan',
+        'alamat_perusahaan',
+        'deskripsi_perusahaan',
+
+        'firebase_id',
     ];
 
     /**
@@ -50,5 +56,28 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        // 'password' => 'hashed',
     ];
+    public function events()
+    {
+        return $this->hasMany(Event::class, 'id', 'id');
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'id');
+    }
+
+    public function totalOrders()
+    {
+        return $this->orders()->count();
+    }
+
+    public function thisMonthOrders()
+    {
+        return $this->orders()
+            ->whereYear('created_at', date('Y'))
+            ->whereMonth('created_at', date('m'))
+            ->count();
+    }
 }

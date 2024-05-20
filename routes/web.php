@@ -24,5 +24,16 @@ Route::group(['namespace' => 'App\Http\Controllers\Api'], function () {
     Route::get('api/getalluser', 'UserController@getAllUser');
     Route::post('api/register', 'UserController@register');
     Route::post('api/update_password', 'UserController@updatePassword');
-    Route::get('api/sendcode', 'UserController@sendCode');
+    Route::get('api/sendcode', 'UserController@sendCode'); //kurang
+    
+    
+    Route::get('api/event/{id_event}', 'EventController@getEvent');
+    Route::get('api/event', 'EventController@getAllEvent');
+
+    Route::get('api/order/getOrder', 'OrderController@getOrder');
+    Route::get('api/order/getCountOrder', 'OrderController@getCountOrder');
+    Route::get('api/order/getOrderedEvent', 'OrderController@getOrderedEvent');
+    
+    Route::get('api/image/{filename}', 'ImageController@getImageBase64');
+    
 });

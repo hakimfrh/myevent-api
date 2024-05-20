@@ -43,20 +43,20 @@ class UserController extends Controller
             return response()->json(['message' => 'Email already used'], 403);
         }
 
-        if (strlen($request->password) <= 8) {
+        if (strlen($request->password) <= 6) {
             return response()->json(['message' => 'password to short'], 403);
         }
 
         $user = User::create([
-            'name' => $request->name,
+            'nama_lengkap' => $request->nama_lengkap,
             'email' => $request->email,
             'username' => $request->username,
             'password' => bcrypt($request->password),
-            'phone' => $request->phone,
+            'no_telp' => $request->no_telp,
 
-            'business_name' => $request->business_name,
-            'business_location' => $request->business_location,
-            'business_description' => $request->business_description,
+            'nama_perusahaan' => $request->nama_perusahaan,
+            'alamat_perusahaan' => $request->alamat_perusahaan,
+            'deskripsi_perusahaan' => $request->deskripsi_perusahaan,
         ]);
         if ($user) {
             return response()->json(['message' => 'ok'], 200);
@@ -81,6 +81,7 @@ class UserController extends Controller
 
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
+            if($user)
             return response()->json(['user' => $user], 200);
         }
 
@@ -144,15 +145,15 @@ class UserController extends Controller
             return response()->json(['message' => 'user not found'], 403);
         }
     }
-    
+
     public function sendCode(Request $requests)
     {
         $verificationCode = rand(100000, 999999);
         $address = $requests->email;
-        
+
         // Create a new instance of VerificationEmail and pass the verification code to it
         $email = new VerificationEmail($verificationCode);
-        
+
         // Send the email using Laravel's Mail facade
         Mail::to($address)->send($email);
         return response()->json(['message' => 'ok'], 200);

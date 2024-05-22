@@ -16,10 +16,9 @@ return new class extends Migration {
             $table->string('penyelenggara_event');
             $table->string('upload_ktp')->nullable();
             $table->string('kategori_event');
-            $table->string('tanggal_event');
-            $table->string('jam_event');
-            $table->string('tanggal_pendaftaran');
-            $table->string('tanggal_penutupan');
+            $table->dateTime('pelaksanaan_event');
+            $table->date('tanggal_pendaftaran');
+            $table->date('tanggal_penutupan');
             $table->text('deskripsi');
             $table->string('alamat');
             $table->string('longitude');

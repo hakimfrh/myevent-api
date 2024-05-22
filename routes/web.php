@@ -27,8 +27,13 @@ Route::group(['namespace' => 'App\Http\Controllers\Api'], function () {
     Route::get('api/sendcode', 'UserController@sendCode'); //kurang
     
     
-    Route::get('api/event/{id_event}', 'EventController@getEvent');
     Route::get('api/event', 'EventController@getAllEvent');
+    Route::get('api/event/{id_event}', 'EventController@getEvent');
+    Route::get('api/event/{id_event}/isEnrolled', 'EventController@isEnrolled');
+    Route::get('api/event/{id_event}/getBooth', 'EventController@getBooth');
+    Route::get('api/event/{id_event}/getBoothRange', 'EventController@getBoothRange');
+    Route::get('api/event/{id_event}/getBoothTotal', 'EventController@getBoothTotal');
+    Route::get('api/event/{id_event}/getBoothAvailable', 'EventController@getBoothAvailable');
 
     Route::get('api/order/getOrder', 'OrderController@getOrder');
     Route::get('api/order/getCountOrder', 'OrderController@getCountOrder');

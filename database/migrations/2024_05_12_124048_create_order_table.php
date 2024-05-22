@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->increments('id_order');
-            $table->string('status_pembayaran');
+            $table->enum('status_order', ['validasi', 'diterima', 'ditolak', 'menunggu pembayaran', 'validasi pembayaran','terverifikasi'])->default('validasi')->nullable();
+            $table->string('nomor_booth');
             $table->integer('harga_bayar');
             $table->string('img_bukti_transfer');
             $table->dateTime('tgl_order');

@@ -95,4 +95,6 @@ class ImageController extends Controller
         // Return the base64 string with the data URI scheme
         return response()->json(['base64Image' => $base64]);
     }
+
+   
 }

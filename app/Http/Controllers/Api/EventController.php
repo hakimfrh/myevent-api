@@ -11,9 +11,9 @@ use App\Models\Booth;
 
 class EventController extends Controller
 {
-    public function getEvent($id_event)
+    public function getEvent(Request $request)
     {
-        // $id_event = $request->id_event;
+        $id_event = $request->id_event;
         $event = Event::where('id_event', $id_event)->first();
 
         if ($event) {
@@ -29,10 +29,10 @@ class EventController extends Controller
         return response()->json(['code' => '200', 'event_list' => $event], 200);
     }
 
-    public function isEnrolled($id_event, Request $request)
+    public function isEnrolled(Request $request)
     {
         $userId = $request->id_user;
-        $eventId = $id_event;
+        $eventId = $request->id_event;
         $user = User::findOrFail($userId);
 
         $orders = $user->orders()->whereHas('booth', function ($query) use ($eventId) {
@@ -55,18 +55,24 @@ class EventController extends Controller
         }
     }
 
-    public function getBooth($id_event)
+    public function getBooth(Request $request)
     {
-        // $eventId = $request->id_event;
-        $booths = Booth::where('id_event', $id_event)->get();
+        $eventId = $request->id_event;
+        $booths = Booth::where('id_event', $eventId)->get();
         return response()->json(['code' => '200', 'booth_list' => $booths], 200);
     }
 
-    public function getBoothRange($id_event)
+    public function getBoothRange(Request $request)
     {
-        // $eventId = $request->id_event;
-        $maxHargaBooth = Booth::where('id_event', $id_event)->max('harga_booth');
-        $minHargaBooth = Booth::where('id_event', $id_event)->min('harga_booth');
+        $eventId = $request->id_event;
+        $maxHargaBooth = Booth::where('id_event', $eventId)->max('harga_booth');
+        $minHargaBooth = Booth::where('id_event', $eventId)->min('harga_booth');
+        if($maxHargaBooth == null){
+        $maxHargaBooth = 0;
+        }
+        if($minHargaBooth == null){
+        $minHargaBooth = 0;
+        }
 
         return response()->json([
             'max_harga_booth' => $maxHargaBooth,
@@ -74,17 +80,18 @@ class EventController extends Controller
         ]);
     }
 
-    public function getBoothTotal($id_event)
+    public function getBoothTotal(Request $request)
     {
-        // $eventId = $request->id_event;
-        $totalBooths = Booth::where('id_event', $id_event)->sum('jumlah_booth');
-        return response()->json(['code' => '200', 'booth_total' => $totalBooths], 200);
+        $eventId = $request->id_event;
+        $totalBooths = Booth::where('id_event', $eventId)->sum('jumlah_booth');
+        return response()->json(['code' => '200', 'booth_total' => (string)$totalBooths], 200);
     }
 
-    public function getBoothAvailable($id_event)
+    public function getBoothAvailable(Request $request)
     {
+        $eventId = $request->id_event;
         // Get all booths for the given event
-        $booths = Booth::where('id_event', $id_event)->get();
+        $booths = Booth::where('id_event', $eventId)->get();
 
         $boothData = [];
 

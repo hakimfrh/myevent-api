@@ -9,15 +9,17 @@ use App\Models\User;
 
 class OrderController extends Controller
 {
-    public function getOrder(Request $request){
+    public function getOrder(Request $request)
+    {
         $user_id = $request->user_id;
         $orders = Order::with('booth.event')->where('id', $user_id)->get();
         if ($orders) {
-            return response()->json(['code'=>'200','order_list' => $orders], 200);
+            return response()->json(['code' => '200', 'order_list' => $orders], 200);
         }
     }
 
-    public function getOrderedEvent(Request $request){
+    public function getOrderedEvent(Request $request)
+    {
         $user_id = $request->user_id;
         $orders = Order::with('booth.event')->where('id', $user_id)->get();
         if ($orders) {
@@ -27,11 +29,12 @@ class OrderController extends Controller
                     $events[] = $order->booth->event;
                 }
             }
-            return response()->json(['code'=>'200','event_list' => $events], 200);
+            return response()->json(['code' => '200', 'event_list' => $events], 200);
         }
     }
 
-    public function getCountOrder(Request $request){
+    public function getCountOrder(Request $request)
+    {
         $user_id = $request->user_id;
         $user = User::findOrFail($user_id);
 
@@ -46,4 +49,31 @@ class OrderController extends Controller
         ]);
     }
 
+    public function makeOrder(Request $request)
+    {
+        $nomorBooth = $request->nomor_booth;
+        $hargabayar = $request->harga_bayar;
+        $tglOrder = now();
+        $idUser = $request->id;
+        $idBooth = $request->id_booth;
+
+        $validOrder = Order::where('id_booth', $idBooth)->where('nomor_booth', $nomorBooth)->first();
+        if (!$validOrder) {
+            $order = Order::create([
+                'nomor_booth' => $nomorBooth,
+                'harga_bayar' => $hargabayar,
+                'tgl_order' => $tglOrder,
+                'id' => $idUser,
+                'id_booth' => $idBooth
+            ]);
+            if ($order) {
+                $orderDetail = Order::where('id', $idUser)->where('id_booth', $idBooth)->where('nomor_booth', $nomorBooth)->where('tgl_order', $tglOrder)->first();
+                return response()->json(['message' => 'ok', 'order_detail' => $orderDetail], 200);
+            } else {
+                return response()->json(['message' => 'unknown eror while creating order'], 406);
+            }
+        } else {
+            return response()->json(['message' => 'booth not available'], 406);
+        }
+    }
 }

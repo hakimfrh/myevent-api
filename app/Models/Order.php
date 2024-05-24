@@ -21,13 +21,22 @@ class Order extends Model
    protected $fillable = [
        'status_pembayaran',
        'harga_bayar',
+       'nomor_booth',
        'img_bukti_transfer',
        'tgl_order',
        'tgl_verifikasi',
        'id',
        'id_booth'
    ];
-
+/**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
    // Relationships
    public function user()
    {

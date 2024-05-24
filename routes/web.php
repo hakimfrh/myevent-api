@@ -35,6 +35,7 @@ Route::group(['namespace' => 'App\Http\Controllers\Api'], function () {
     Route::get('api/event/getBoothTotal', 'EventController@getBoothTotal');
     Route::get('api/event/getBoothAvailable', 'EventController@getBoothAvailable');
 
+    Route::post('api/order/makeOrder', 'OrderController@makeOrder');
     Route::get('api/order/getOrder', 'OrderController@getOrder');
     Route::get('api/order/getCountOrder', 'OrderController@getCountOrder');
     Route::get('api/order/getOrderedEvent', 'OrderController@getOrderedEvent');

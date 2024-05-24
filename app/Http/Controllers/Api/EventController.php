@@ -108,14 +108,19 @@ class EventController extends Controller
 
             // Determine the unselected booth numbers
             $unselectedBooths = array_diff($allBooths, $selectedBooths);
+            $unselectedBoothsAsString = array_map(function ($value) {
+                return (string) $value;
+            }, array_values($unselectedBooths));
 
             $boothData[] = [
                 'id_booth' => $booth->id_booth,
+                'tipe_booth' => $booth->tipe_booth,
+                'harga_booth' => $booth->harga_booth,
                 'booth_remaining' => count($unselectedBooths),
-                'booth_available' => array_values($unselectedBooths)
+                'booth_available' => array_values($unselectedBoothsAsString)
             ];
         }
 
-        return response()->json($boothData);
+        return response()->json(['booth_available' => $boothData]);
     }
 }

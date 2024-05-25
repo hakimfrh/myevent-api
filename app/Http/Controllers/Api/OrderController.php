@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\User;
+use App\Models\Booth;
 
 class OrderController extends Controller
 {
@@ -59,6 +60,10 @@ class OrderController extends Controller
 
         $validOrder = Order::where('id_booth', $idBooth)->where('nomor_booth', $nomorBooth)->first();
         if (!$validOrder) {
+            $booth = Booth::find($idBooth);
+            if ($nomorBooth > $booth->jumlah_booth) {
+                return response()->json(['message' => 'booth not available'], 406);
+            }
             $order = Order::create([
                 'nomor_booth' => $nomorBooth,
                 'harga_bayar' => $hargabayar,

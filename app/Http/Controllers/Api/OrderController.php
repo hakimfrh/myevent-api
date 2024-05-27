@@ -72,7 +72,7 @@ class OrderController extends Controller
                 'id_booth' => $idBooth
             ]);
             if ($order) {
-                $orderDetail = Order::where('id', $idUser)->where('id_booth', $idBooth)->where('nomor_booth', $nomorBooth)->where('tgl_order', $tglOrder)->first();
+                $orderDetail = Order::with('booth.event')->where('id', $idUser)->where('id_booth', $idBooth)->where('nomor_booth', $nomorBooth)->where('tgl_order', $tglOrder)->first();
                 return response()->json(['message' => 'ok', 'order_detail' => $orderDetail], 200);
             } else {
                 return response()->json(['message' => 'unknown eror while creating order'], 406);

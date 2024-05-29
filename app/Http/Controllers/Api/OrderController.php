@@ -81,4 +81,37 @@ class OrderController extends Controller
             return response()->json(['message' => 'booth not available'], 406);
         }
     }
+
+    public function uploadBayar(Request $request)
+    {
+
+        $idOrder = $request->id_order;
+        $imageData = $request->image_data;
+        // $imageName = $request->image_name;
+        $imageType = $request->image_type;
+
+        $order = Order::with('booth.event')->find($idOrder);
+
+        if ($order) {
+            $imageName = 'img_b' . $order->booth->event->id_event . '_' . $idOrder . '_' . now()->format('Y-m-d_H-i-s') . '.' . $imageType;
+            // Decode the base64 image data
+            $decoded_image = base64_decode($imageData);
+            // Save the received image data to a file
+            $save_path = 'img/' . $imageName ;
+            // $save_path = public_path('img\\' . $imageName);
+            // $save_path = '../../../../public/img/'.$imageName;
+            $file_saved = file_put_contents($save_path, $decoded_image);
+
+            // return response()->json(['message' => $imageName], 200);
+            if ($file_saved) {
+                $order->img_bukti_transfer = $save_path;
+                $order->save();
+                return response()->json(['message' => 'ok'], 200);
+            } else {
+                return response()->json(['message' => 'failed saving file'], 500);
+            }
+        } else {
+            return response()->json(['message' => 'order not found'], 404);
+        }
+    }
 }

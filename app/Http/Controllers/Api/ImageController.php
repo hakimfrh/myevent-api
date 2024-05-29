@@ -85,7 +85,7 @@ class ImageController extends Controller
 
             // Encode the resized image to base64
             $base64 = base64_encode($resizedImageData);
-            return response()->json(['base64Image' => $base64]);
+            return response()->json(['base64Image' => $base64],200);
         }
 
         // Get the file content
@@ -93,30 +93,27 @@ class ImageController extends Controller
         // Encode the image to base64
         $base64 = base64_encode($fileContent);
         // Return the base64 string with the data URI scheme
-        return response()->json(['base64Image' => $base64]);
+        return response()->json(['base64Image' => $base64],200);
     }
 
-    public function saveImage()
+    public function saveImage(Request $request)
     {
-        // $nik = $data['nik'];
-        // $image_name = $nik . ".jpeg";
-        // $image_data = $data['image_data'];
+        $imageData = $request->image_data;
+        $imageName = $request->image_name;
+        $imagePath = $request->image_path;
 
         // // Decode the base64 image data
-        // $decoded_image = base64_decode($image_data);
+        $decoded_image = base64_decode($imageData);
 
         // // Save the received image data to a file
-        // $save_path = "img/" . $image_name;
+        $save_path = 'img/' . $imageName;
 
-        // $file_saved = file_put_contents($save_path, $decoded_image);
+        $file_saved = file_put_contents($save_path, $decoded_image);
 
-        // if ($file_saved !== false) {
-        //     include "DatabaseConfig.php";
-        //     $conn = mysqli_connect($HostName, $HostUser, $HostPass, $DatabaseName);
-        //     mysqli_query($conn, "UPDATE akun SET foto_profil = '$image_name' WHERE akun.nik = '$nik'") or die("SQL ERROR " . mysqli_error($conn));
-        //     echo "ok";
-        // } else {
-        //     echo "Failed to save the image.";
-        // }
+        if ($file_saved) {
+            return response()->json(['message' => 'ok'],200);
+        } else {
+            return response()->json(['message' => 'failed saving file'],500);
+        }
     }
 }

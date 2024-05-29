@@ -11,9 +11,20 @@ use App\Models\Booth;
 class OrderController extends Controller
 {
     public function getOrder(Request $request)
-    {
+    {   
+        $query = Order::query();
+        if($request->has('status_order')){
+            $status = $request->query('status_order');
+            $validStatuses = ['validasi', 'diterima', 'ditolak', 'menunggu pembayaran', 'validasi pembayaran', 'terverifikasi'];
+            if (in_array($status, $validStatuses)) {
+                $query->where('status_order', $status);
+            } else {
+                return response()->json(['error' => 'Invalid status'], 400);
+            }
+        }
         $user_id = $request->user_id;
-        $orders = Order::with('booth.event')->where('id', $user_id)->get();
+        $orders = $query->with('booth.event')->where('id', $user_id)->get();
+        // $orders = Order::with('booth.event')->where('id', $user_id)->get();
         if ($orders) {
             return response()->json(['code' => '200', 'order_list' => $orders], 200);
         }
@@ -105,6 +116,7 @@ class OrderController extends Controller
             // return response()->json(['message' => $imageName], 200);
             if ($file_saved) {
                 $order->img_bukti_transfer = $save_path;
+                $order->status_order = 'validasi pembayaran';
                 $order->save();
                 return response()->json(['message' => 'ok'], 200);
             } else {

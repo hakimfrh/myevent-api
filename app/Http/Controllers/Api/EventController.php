@@ -43,6 +43,7 @@ class EventController extends Controller
                 'enrolled' => true,
                 'id_order' => $orders->id_order,
                 'tgl_order' => $orders->tgl_order,
+                'status_order' => $orders->status_order,
                 'user_id' => $userId,
                 'event_id' => $eventId
             ]);

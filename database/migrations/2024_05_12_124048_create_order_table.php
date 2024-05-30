@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('img_bukti_transfer');
             $table->dateTime('tgl_order');
             $table->dateTime('tgl_verifikasi');
+            $table->dateTime('tgl_bayar');
             $table->unsignedBigInteger('id');
             $table->foreign('id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
             $table->unsignedInteger('id_booth');

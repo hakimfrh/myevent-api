@@ -25,6 +25,7 @@ class Order extends Model
        'img_bukti_transfer',
        'tgl_order',
        'tgl_verifikasi',
+       'tgl_bayar',
        'id',
        'id_booth'
    ];

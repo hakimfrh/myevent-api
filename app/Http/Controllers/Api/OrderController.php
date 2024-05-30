@@ -101,10 +101,11 @@ class OrderController extends Controller
         // $imageName = $request->image_name;
         $imageType = $request->image_type;
 
+        $time = now();
         $order = Order::with('booth.event')->find($idOrder);
 
         if ($order) {
-            $imageName = 'img_b' . $order->booth->event->id_event . '_' . $idOrder . '_' . now()->format('Y-m-d_H-i-s') . '.' . $imageType;
+            $imageName = 'img_b' . $order->booth->event->id_event . '_' . $idOrder . '_' . $time->format('Y-m-d_H-i-s') . '.' . $imageType;
             // Decode the base64 image data
             $decoded_image = base64_decode($imageData);
             // Save the received image data to a file
@@ -117,6 +118,7 @@ class OrderController extends Controller
             if ($file_saved) {
                 $order->img_bukti_transfer = $save_path;
                 $order->status_order = 'validasi pembayaran';
+                $order->tgl_bayar = $time;
                 $order->save();
                 return response()->json(['message' => 'ok'], 200);
             } else {

@@ -23,10 +23,73 @@ class EventController extends Controller
         }
     }
 
-    public function getAllEvent()
+    public function getAllEvent(Request $request)
     {
-        $event = Event::where('status', 2)->get();
-        return response()->json(['code' => '200', 'event_list' => $event], 200);
+        // $event = Event::where('status', 'verified')->get();
+        date_default_timezone_set('Asia/Jakarta');
+        $time = now();
+
+        $query = Event::query();
+
+        if ($request->has('harga_min') || $request->has('harga_max')) {
+            if ($request->has('harga_min')) {
+                $minPrice = $request->query('harga_min');
+            } else {
+                $minPrice = 0;
+            }
+            if ($request->has('harga_max')) {
+                $maxPrice = $request->query('harga_max');
+            } else {
+                $maxPrice = 9999999999;
+            }
+
+            $query->whereHas('booths', function ($q) use ($minPrice, $maxPrice) {
+                $q->whereBetween('harga_booth', [$minPrice, $maxPrice]);
+            });
+        }
+
+        if ($request->has('kategori')) {
+            $kategori = $request->kategori;
+            $query->where('kategori_event', $kategori);
+        }
+
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $startDate = $request->query('start_date');
+            $endDate = $request->query('end_date');
+
+            $query->whereBetween('tanggal_event', [$startDate, $endDate]);
+        }
+
+        if ($request->has('latitude') && $request->has('longitude') && $request->has('distance')) {
+            $latitude = $request->query('latitude');
+            $longitude = $request->query('longitude');
+            $distance = $request->query('distance'); // Distance in kilometers
+
+            $haversine = "(6371 * acos(cos(radians($latitude)) 
+                          * cos(radians(latitude)) 
+                          * cos(radians(longitude) - radians($longitude)) 
+                          + sin(radians($latitude)) 
+                          * sin(radians(latitude))))";
+
+            $query->selectRaw("*, {$haversine} AS distance")
+                  ->having('distance', '<', $distance)
+                  ->orderBy('distance');
+        }
+
+        // Apply search filters dynamically
+        if ($request->has('search')) {
+            $search = $request->query('search');
+            $query->where('nama_event', 'like', '%' . $search . '%')
+                ->orWhere('penyelenggara_event', 'like', '%' . $search . '%')
+                ->orWhere('kategori_event', 'like', '%' . $search . '%')
+                ->orWhere('deskripsi', 'like', '%' . $search . '%')
+                ->orWhere('alamat', 'like', '%' . $search . '%');
+        }
+
+        // Fetch the filtered events
+        $events = $query->where('status', 'verified')->where('tanggal_pendaftaran', '<', $time)->where('tanggal_penutupan', '>', $time)->get();
+
+        return response()->json(['code' => '200', 'event_list' => $events], 200);
     }
 
     public function isEnrolled(Request $request)
@@ -37,7 +100,7 @@ class EventController extends Controller
 
         $orders = $user->orders()->whereHas('booth', function ($query) use ($eventId) {
             $query->where('id_event', $eventId);
-        })->first();
+        })->whereNot('status_order', 'ditolak')->first();
         if ($orders) {
             return response()->json([
                 'enrolled' => true,
@@ -68,11 +131,11 @@ class EventController extends Controller
         $eventId = $request->id_event;
         $maxHargaBooth = Booth::where('id_event', $eventId)->max('harga_booth');
         $minHargaBooth = Booth::where('id_event', $eventId)->min('harga_booth');
-        if($maxHargaBooth == null){
-        $maxHargaBooth = 0;
+        if ($maxHargaBooth == null) {
+            $maxHargaBooth = 0;
         }
-        if($minHargaBooth == null){
-        $minHargaBooth = 0;
+        if ($minHargaBooth == null) {
+            $minHargaBooth = 0;
         }
 
         return response()->json([

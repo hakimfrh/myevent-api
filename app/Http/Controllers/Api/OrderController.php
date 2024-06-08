@@ -100,7 +100,7 @@ class OrderController extends Controller
         $imageData = $request->image_data;
         // $imageName = $request->image_name;
         $imageType = $request->image_type;
-
+        date_default_timezone_set('Asia/Jakarta');
         $time = now();
         $order = Order::with('booth.event')->find($idOrder);
 
@@ -122,7 +122,7 @@ class OrderController extends Controller
             // return response()->json(['message' => $imageName], 200);
             if ($file_saved) {
                 $order->img_bukti_transfer = $save_path;
-                $order->status_order = 'validasi pembayaran';
+                $order->status_order = 'menunggu pembayaran';
                 $order->tgl_bayar = $time;
                 $order->save();
                 return response()->json(['message' => 'ok'], 200);

@@ -65,10 +65,11 @@ class ImageController extends Controller
         return $resizedImageData;
     }
 
-    public function getImageBase64($filename, Request $request)
+    public function getImageBase64(Request $request)
     {
         // Define the path to the image
-        $path = 'img/' . $filename;
+        // $path = 'img/' . $filename;
+        $path = $request->image_path;
 
         // Check if the file exists
         if (!file_exists($path)) {

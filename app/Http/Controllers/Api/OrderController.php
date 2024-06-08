@@ -11,9 +11,9 @@ use App\Models\Booth;
 class OrderController extends Controller
 {
     public function getOrder(Request $request)
-    {   
+    {
         $query = Order::query();
-        if($request->has('status_order')){
+        if ($request->has('status_order')) {
             $status = $request->query('status_order');
             $validStatuses = ['validasi', 'diterima', 'ditolak', 'menunggu pembayaran', 'validasi pembayaran', 'terverifikasi'];
             if (in_array($status, $validStatuses)) {
@@ -105,13 +105,18 @@ class OrderController extends Controller
         $order = Order::with('booth.event')->find($idOrder);
 
         if ($order) {
-            $imageName = 'img_b' . $order->booth->event->id_event . '_' . $idOrder . '_' . $time->format('Y-m-d_H-i-s') . '.' . $imageType;
+            $idEvent = $order->booth->event->id_event;
+            $imageName = 'img_b' . $idEvent . '_' . $idOrder . '_' . $time->format('Y-m-d_H-i-s') . '.' . $imageType;
             // Decode the base64 image data
             $decoded_image = base64_decode($imageData);
             // Save the received image data to a file
-            $save_path = 'img/' . $imageName ;
+            $save_path = 'uploads/' . $idEvent . '/' . 'bayar/' . $imageName;
             // $save_path = public_path('img\\' . $imageName);
             // $save_path = '../../../../public/img/'.$imageName;
+            $directory = dirname($save_path);
+            if (!is_dir($directory)) {
+                mkdir($directory, 0755, true);
+            }
             $file_saved = file_put_contents($save_path, $decoded_image);
 
             // return response()->json(['message' => $imageName], 200);

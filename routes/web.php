@@ -41,6 +41,6 @@ Route::group(['namespace' => 'App\Http\Controllers\Api'], function () {
     Route::get('api/order/getCountOrder', 'OrderController@getCountOrder');
     Route::get('api/order/getOrderedEvent', 'OrderController@getOrderedEvent');
     
-    Route::get('api/image/{filename}', 'ImageController@getImageBase64');
+    Route::get('api/image', 'ImageController@getImageBase64');
     
 });
